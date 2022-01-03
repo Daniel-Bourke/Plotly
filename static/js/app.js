@@ -1,4 +1,3 @@
-
 // CREATE THE FUNCTION
 // Function when a dropdown option at element "selDataset" is selected
 function dropDownSelected(selectedID) {
@@ -38,7 +37,7 @@ function dropDownSelected(selectedID) {
         });
 
 
-        // Filter samples array data based on dropdown selection
+        // Filter samples array data based on dropdown selection (while converting string to integer)
         var idSample = data.samples.filter(item => parseInt(item.id) == selectedID);
 
         // BAR CHART
@@ -50,7 +49,7 @@ function dropDownSelected(selectedID) {
         top10otuID = top10otuID.reverse();
         top10otuLabels = top10otuLabels.reverse();
 
-        // trace 
+        // trace for bar
         var trace = {
             y: top10otuID.map(item => 'OTU ' + item),
             x: top10sampleValue,
@@ -66,7 +65,7 @@ function dropDownSelected(selectedID) {
             }
         };
 
-        // layout 
+        // layout for bar
         var layout = {
             title: {
                 text: `<b>Top 10 OTU's found for Individual ${selectedID}</b> <br><sup>Hover for more detail</sup> `,
@@ -115,12 +114,12 @@ function dropDownSelected(selectedID) {
 
 
         // BUBBLE CHART
-        // extract sample value and OTUID from individual
+        // extract sample value, OTUID and labels from individual
         var sampleValue = idSample[0].sample_values;
         var otuID = idSample[0].otu_ids;
         var otuLabels = idSample[0].otu_labels
 
-        // trace
+        // trace for bubble chart
         var trace1 = {
             x: otuID,
             y: sampleValue,
@@ -133,10 +132,10 @@ function dropDownSelected(selectedID) {
             }
         };
 
-        // layout 
+        // layout for bubble chart
         var layout1 = {
             title: {
-                text: `<b>Bubble Chart For Each Sample</b> <br><sup>Hover for more detail</sup> `,
+                text: `<b>OTU's found for Individual ${selectedID}</b> <br><sup>Hover for more detail</sup> `,
                 font: {
                     family: 'Ubuntu, sans-serif',
                     size: 24
@@ -155,7 +154,6 @@ function dropDownSelected(selectedID) {
                     size: 12,
                     color: 'dimgrey'
                 }
-                // yaxis: { title: 'OTU ID' }
             },
             yaxis: {
                 title: {
@@ -170,7 +168,6 @@ function dropDownSelected(selectedID) {
                     size: 12,
                     color: 'dimgrey'
                 }
-                // yaxis: { title: 'OTU ID' }
             }, showlegend: false,
             paper_bgcolor: '#eee'
         };
@@ -181,13 +178,14 @@ function dropDownSelected(selectedID) {
 
 
         // BONUS: GAUGE CHART
-        // select the Guage
+        // select the Gauge
         var guageDisplay = d3.select("#gauge");
-        // Clear Guage html
+        // Clear Gauge html
         guageDisplay.html("");
         // extract washfrequency from individual
         var washFreq = SelectedMetadata[0].wfreq;
 
+        var opacity = 0.5
         // Define Guage data 
         var guageData = [
             {
@@ -204,13 +202,13 @@ function dropDownSelected(selectedID) {
                 mode: "gauge+number",
                 gauge: {
                     axis: { range: [0, 9] },
-                    bar: { color: "Gray", Line: "small" },
+                    bar: { color: "#333333", Line: "small" },
                     steps: [
-                        { range: [0, 2], color: "#F31D64" },
-                        { range: [2, 4], color: "#A224AD" },
-                        { range: [4, 6], color: "#6A38B3" },
-                        { range: [6, 8], color: "#3C50B1" },
-                        { range: [8, 10], color: "#0095EF" }
+                        { range: [0, 2], color: `rgba(243, 29, 100, ${opacity})` },
+                        { range: [2, 4], color: `rgba(162, 36, 173, ${opacity})` },
+                        { range: [4, 6], color: `rgba(106, 56, 179, ${opacity})` },
+                        { range: [6, 8], color: `rgba(60, 80, 177, ${opacity})` },
+                        { range: [8, 10], color: `rgba(0, 149, 239, ${opacity})` }
                     ],
                     threshold: {
                         value: washFreq
@@ -218,19 +216,16 @@ function dropDownSelected(selectedID) {
                 }
             }
         ];
-        const gaugeLayout = {
-            // width: 600,
-            // height: 400,
-            // margin: { t: 0, b: 0 },
+        var gaugeLayout = {
             font: { size: "16", color: "#333333", family: "Ubuntu, sans-serif" },
             paper_bgcolor: '#eee'
         };
 
         // Plot using Plotly
         Plotly.newPlot('gauge', guageData, gaugeLayout);
-
     });
 }
+
 
 // Randomly select a Test Subject to Start With
 d3.json("data/samples.json").then((data) => {
@@ -248,9 +243,7 @@ d3.json("data/samples.json").then((data) => {
 // Event on change takes the value and calls the function during dropdown selection
 d3.select("#selDataset").on('change', () => {
     dropDownSelected(d3.event.target.value);
-
 });
 
-// console.log("---------")
 
 
